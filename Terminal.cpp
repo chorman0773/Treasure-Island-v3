@@ -53,6 +53,7 @@ const string& toColorCode(Color c){
 Terminal::Terminal(){}//Do nothing, so far
 
 Terminal::~Terminal(){
+    clear();
     cout << RESET;
 }
 
@@ -85,6 +86,10 @@ int Terminal::get(){
     if (tcsetattr(0, TCSADRAIN, &old) < 0)
             perror ("tcsetattr ~ICANON");
     return (buf);
+}
+Terminal& Terminal::wait(){
+    get();
+    return *this;
 }
 
 Terminal& Terminal::clear(){

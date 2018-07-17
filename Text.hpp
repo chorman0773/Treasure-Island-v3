@@ -67,7 +67,7 @@ public:
         return print(second,rest...);
     }
     Terminal& clear();
-    
+    Terminal& wait();
     int get();
 };
 
