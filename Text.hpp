@@ -66,6 +66,7 @@ public:
         print(first);
         return print(second,rest...);
     }
+    Terminal& clear();
     
     int get();
 };

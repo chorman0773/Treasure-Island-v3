@@ -3,6 +3,14 @@
 #include <iostream>
 #include <getch.h>
 
+#ifdef _WIN32
+#define CLEAR "cls"
+#else
+#define CLEAR "clear"
+#endif
+
+#include <cstdlib>
+
 using std::cout;
 using std::endl;
 
@@ -77,4 +85,9 @@ int Terminal::get(){
     if (tcsetattr(0, TCSADRAIN, &old) < 0)
             perror ("tcsetattr ~ICANON");
     return (buf);
+}
+
+Terminal& Terminal::clear(){
+    system(CLEAR);
+    return *this;
 }
