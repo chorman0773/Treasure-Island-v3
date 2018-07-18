@@ -45,6 +45,7 @@ public:
     TextComponent();
     TextComponent(const string&);
     TextComponent(string&&);
+    TextComponent(const char*);
     TextComponent(Color);
     TextComponent(int);
     TextComponent(double);
