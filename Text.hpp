@@ -39,7 +39,6 @@ class TextComponent{
 private:
     Color c;
     string text;
-    shared_ptr<TextComponent> next;
     bool endl;
 public:
     TextComponent();
