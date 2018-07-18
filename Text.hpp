@@ -13,13 +13,14 @@ using std::shared_ptr;
 #define STRINGIFY(...) #__VA_ARGS__
 #define COLOR(r,g,b) STRINGIFY(\x1b[38;2;r;g;b##m)
 
-#define RESET "\x1b[0m"
+
 
 enum class Color{
     BLACK=0, DARK_BLUE,DARK_GREEN,DARK_AQUA,
     DARK_RED,DARK_PURPLE,GOLD,GRAY,
     DARK_GRAY,BLUE,GREEN,AQUA,
     RED,PURPLE,YELLOW,WHITE,
+    Reset,
     NONE = 255
 };
 
