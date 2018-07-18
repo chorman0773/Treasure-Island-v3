@@ -5,6 +5,8 @@
 #include <initializer_list>
 #include <vector>
 #include <memory>
+#include <UUID.hpp>
+#include <Version.hpp>
 
 using std::initializer_list;
 using std::vector;
@@ -50,6 +52,8 @@ public:
     TextComponent(int);
     TextComponent(double);
     TextComponent(bool);
+    TextComponent(const UUID&);
+    TextComponent(Version);
     TextComponent(endline_t);
     TextComponent(const initializer_list<TextComponent>&);
     Color getColor()const;
@@ -70,6 +74,7 @@ public:
     Terminal& clear();
     Terminal& wait();
     int get();
+    string readPassword(char='*');
 };
 
 #endif
