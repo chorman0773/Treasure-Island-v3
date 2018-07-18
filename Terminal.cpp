@@ -54,7 +54,6 @@ Terminal::Terminal(){}//Do nothing, so far
 
 Terminal::~Terminal(){
     clear();
-    cout << RESET;
 }
 
 Terminal& Terminal::print(const TextComponent& t){
@@ -93,6 +92,7 @@ Terminal& Terminal::wait(){
 }
 
 Terminal& Terminal::clear(){
+    cout << RESET;
     system(CLEAR);
     return *this;
 }
