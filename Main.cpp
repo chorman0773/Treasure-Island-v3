@@ -20,7 +20,7 @@ using namespace std::string_literals;
 
 
 int main(int argc,const char* argv[]){
-    Menu main("Main menu",{"\x1b[38;2;0;255;0mPlay\x1b[0m"s,"Exit"s});
+    Menu main("Main menu",{"\x1b[38;2;0;255;0mPlay\x1b[0m"s,"\x1b[38;2;255;0;0mExit\x1b[0m"s});
     Terminal term;
     cout << "Treasure Island v3"<<endl
         <<"By Connor Horman"<<endl;
