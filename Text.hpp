@@ -15,7 +15,7 @@ using std::shared_ptr;
 
 
 
-enum class Color{
+enum class Color:unsigned char{
     BLACK=0, DARK_BLUE,DARK_GREEN,DARK_AQUA,
     DARK_RED,DARK_PURPLE,GOLD,GRAY,
     DARK_GRAY,BLUE,GREEN,AQUA,

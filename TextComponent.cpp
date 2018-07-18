@@ -12,8 +12,8 @@ using std::to_string;
     TextComponent::TextComponent(Color color):text(),c(color),endl(false){}
     TextComponent::TextComponent(int i):TextComponent(to_string(i)){}
     TextComponent::TextComponent(double d):TextComponent(to_string(d)){}
-    TextComponent::TextComponent(bool b):TextComponent(string(b?"true":"false")){}
-    TextComponent::TextComponent(endline_t):endl(true){}
+    TextComponent::TextComponent(bool b):TextComponent((b?"true":"false")){}
+    TextComponent::TextComponent(endline_t):endl(true),c(Color::NONE){}
     TextComponent::TextComponent(const char* c):text(c),c(Color::NONE),endl(false){}
 
     Color TextComponent::getColor()const{
