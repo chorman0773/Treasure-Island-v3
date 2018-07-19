@@ -12,8 +12,7 @@ using std::initializer_list;
 using std::vector;
 using std::shared_ptr;
 
-#define STRINGIFY(...) #__VA_ARGS__
-#define COLOR(r,g,b) STRINGIFY(\x1b[38;2;r;g;b##m)
+
 
 
 
@@ -37,12 +36,54 @@ public:
 
 const endline_t endline{};
 
+template<Color c> struct background_t{
+public:
+    explicit constexpr background_t()=default;
+};
+
+template<> struct background_t<Color::Reset>{
+private:
+    background_t()=delete;
+    background_t(const background_t&)=delete;
+    background_t(background_t&&)=delete;
+};
+
+template<> struct background_t<Color::NONE>{
+private:
+    background_t()=delete;
+    background_t(const background_t&)=delete;
+    background_t(background_t&&)=delete;
+};
+
+template<Color c> struct foreground_t{
+public:
+    explicit constexpr foreground_t()=default;
+};
+
+template<> struct foreground_t<Color::Reset>{
+private:
+    foreground_t()=delete;
+    foreground_t(const foreground_t&)=delete;
+    foreground_t(foreground_t&&)=delete;
+};
+
+template<> struct foreground_t<Color::NONE>{
+private:
+    foreground_t()=delete;
+    foreground_t(const foreground_t&)=delete;
+    foreground_t(foreground_t&&)=delete;
+};
+
+template<Color c> const foreground_t<c> foreground{};
+template<Color c> const background_t<c> background{};
+
 
 class TextComponent{
 private:
     Color c;
     string text;
-    bool endl;
+    bool endl:1;
+    bool bg:1;
 public:
     TextComponent();
     TextComponent(const string&);
@@ -56,9 +97,12 @@ public:
     TextComponent(Version);
     TextComponent(endline_t);
     TextComponent(const initializer_list<TextComponent>&);
+    template<Color c> TextComponent(foreground_t<c>):c(c),text(),bg(false),endl(false){}
+    template<Color c> TextComponent(background_t<c>):c(c),text(),bg(true),endl(false){}
     Color getColor()const;
     const string& getText()const;
     bool isEndl()const;
+    bool isBGColor()const;
 };
 
 class Terminal{

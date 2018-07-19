@@ -6,6 +6,13 @@
 
 #define RESET "\x1b[0m"
 
+#define FG 38
+#define BG 48
+
+#define STRINGIFY(...) #__VA_ARGS__
+#define FCOLOR(r,g,b) STRINGIFY(\x1b[38;2;r;g;b##m)
+#define GCOLOR(r,g,b) STRINGIFY(\x1b[48;2;r;g;b##m)
+
 #ifdef _WIN32
 #define CLEAR "cls"
 #else
@@ -17,17 +24,28 @@
 using std::cout;
 using std::endl;
 
-const string colorCodes[] = {
-    COLOR(0,0,0),COLOR(0,0,128),COLOR(0,100,0),COLOR(0,139,139),
-    COLOR(139,0,0),COLOR(75,0,130),COLOR(218,165,32),COLOR(128,128,128),
-    COLOR(64,64,64),COLOR(0,0,255),COLOR(0,255,0),COLOR(0,255,255),
-    COLOR(255,0,0),COLOR(128,0,128),COLOR(255,255,0),COLOR(255,255,255),
+const string fcolorCodes[] = {
+    FCOLOR(0,0,0),FCOLOR(0,0,128),FCOLOR(0,100,0),FCOLOR(0,139,139),
+    FCOLOR(139,0,0),FCOLOR(75,0,130),FCOLOR(218,165,32),FCOLOR(128,128,128),
+    FCOLOR(64,64,64),FCOLOR(0,0,255),FCOLOR(0,255,0),FCOLOR(0,255,255),
+    FCOLOR(255,0,0),FCOLOR(128,0,128),FCOLOR(255,255,0),FCOLOR(255,255,255),
+    RESET
+};
+
+const string gcolorCodes[] = {
+    GCOLOR(0,0,0),GCOLOR(0,0,128),GCOLOR(0,100,0),GCOLOR(0,139,139),
+    GCOLOR(139,0,0),GCOLOR(75,0,130),GCOLOR(218,165,32),GCOLOR(128,128,128),
+    GCOLOR(64,64,64),GCOLOR(0,0,255),GCOLOR(0,255,0),GCOLOR(0,255,255),
+    GCOLOR(255,0,0),GCOLOR(128,0,128),GCOLOR(255,255,0),GCOLOR(255,255,255),
     RESET
 };
 
 
-const string& toColorCode(Color c){
-    return colorCodes[static_cast<unsigned char>(c)];
+const string& toFColorCode(Color c){
+    return fcolorCodes[static_cast<unsigned char>(c)];
+}
+const string& toGColorCode(Color c){
+    return gcolorCodes[static_cast<unsigned char>(c)];
 }
 
 Terminal::Terminal(){}//Do nothing, so far
@@ -38,8 +56,13 @@ Terminal::~Terminal(){
 
 Terminal& Terminal::print(const TextComponent& t){
     Color c = t.getColor();
-    if(c!=Color::NONE)
-        cout << toColorCode(c);
+    if(c!=Color::NONE){
+        if(t.isBGColor())
+            cout << toGColorCode(c);
+        else
+            cout << toFColorCode(c);
+        cout.flush();//Make sure the color is updated
+    }
     if(t.isEndl())
         cout << endl;
     else
@@ -72,7 +95,12 @@ Terminal& Terminal::wait(){
 }
 
 Terminal& Terminal::clear(){
-    cout << RESET;
+    cout << RESET <<endl;
     system(CLEAR);
     return *this;
+}
+
+string Terminal::readPassword(char echo){
+    string pwd;
+    int i = get();
 }

@@ -28,7 +28,7 @@ int main(int argc,const char* argv[]){
     m.addItem(i_exit);
     switch(m.select(term)){
         case OPT_PLAY:
-                term.print("Game not implemented"s,endline,"Press any key to exit>"s,endline)
+                term.print(background<Color::DARK_RED>,foreground<Color::YELLOW>,"Game not implemented"s,endline,"Press any key to exit>"s,endline)
                 .wait().clear();
         break;
         case OPT_EXIT:
