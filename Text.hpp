@@ -77,6 +77,12 @@ private:
 template<Color c> const foreground_t<c> foreground{};
 template<Color c> const background_t<c> background{};
 
+struct tab_t{
+public:
+    explicit constexpr tab_t()=default; 
+};
+const tab_t tab;
+
 
 class TextComponent{
 private:
@@ -84,6 +90,7 @@ private:
     string text;
     bool endl:1;
     bool bg:1;
+    bool __tab:1;
 public:
     TextComponent();
     TextComponent(const string&);
@@ -96,13 +103,15 @@ public:
     TextComponent(const UUID&);
     TextComponent(Version);
     TextComponent(endline_t);
+    TextComponent(tab_t);
     TextComponent(const initializer_list<TextComponent>&);
-    template<Color c> TextComponent(foreground_t<c>):c(c),text(),bg(false),endl(false){}
-    template<Color c> TextComponent(background_t<c>):c(c),text(),bg(true),endl(false){}
+    template<Color c> TextComponent(foreground_t<c>):c(c),text(),bg(false),__tab(true),endl(false){}
+    template<Color c> TextComponent(background_t<c>):c(c),text(),bg(true),__tab(true),endl(false){}
     Color getColor()const;
     const string& getText()const;
     bool isEndl()const;
     bool isBGColor()const;
+    bool isTab()const;
 };
 
 class Terminal{

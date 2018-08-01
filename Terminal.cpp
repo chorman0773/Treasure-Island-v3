@@ -1,8 +1,14 @@
 #include <Text.hpp>
 
 #include <iostream>
+extern "C"{
+#ifndef _WIN32
 #include <unistd.h>
 #include <termios.h>
+#elif
+#include <conio.h>
+#endif
+};
 
 #define RESET "\x1b[0m"
 
@@ -48,7 +54,9 @@ const string& toGColorCode(Color c){
     return gcolorCodes[static_cast<unsigned char>(c)];
 }
 
-Terminal::Terminal(){}//Do nothing, so far
+Terminal::Terminal(){
+    clear();
+}
 
 Terminal::~Terminal(){
     clear();
@@ -63,14 +71,17 @@ Terminal& Terminal::print(const TextComponent& t){
             cout << toFColorCode(c);
         cout.flush();//Make sure the color is updated
     }
-    if(t.isEndl())
+    else if(t.isEndl())
         cout << endl;
+    else if(t.isTab())
+        cout << "\t";
     else
         cout << t.getText();
     return *this;
 }
 
 int Terminal::get(){
+#ifndef _WIN32
     unsigned char buf = 0;
     struct termios old = {0};
     if (tcgetattr(0, &old) < 0)
@@ -88,6 +99,9 @@ int Terminal::get(){
     if (tcsetattr(0, TCSADRAIN, &old) < 0)
             perror ("tcsetattr ~ICANON");
     return (buf);
+#else
+    return _getch();
+#endif
 }
 Terminal& Terminal::wait(){
     get();
