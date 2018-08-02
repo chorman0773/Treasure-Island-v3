@@ -7,6 +7,7 @@
 #include <memory>
 #include <UUID.hpp>
 #include <Version.hpp>
+#include <mutex>
 
 using std::initializer_list;
 using std::vector;
@@ -16,13 +17,13 @@ using std::shared_ptr;
 
 
 
-enum class Color:unsigned char{
-    BLACK=0, DARK_BLUE,DARK_GREEN,DARK_AQUA,
-    DARK_RED,DARK_PURPLE,GOLD,GRAY,
-    DARK_GRAY,BLUE,GREEN,AQUA,
-    RED,PURPLE,YELLOW,WHITE,
-    Reset,
-    NONE = 255
+enum class Color:uint32_t{
+    BLACK=0x000000, DARK_BLUE=0x00007f,DARK_GREEN=0x006400,DARK_AQUA=0x008B8B,
+    DARK_RED=0x8B0000,DARK_PURPLE=0x4B0082,GOLD=0xDAA520,GRAY=0x808080,
+    DARK_GRAY=0x404040,BLUE=0x0000ff,GREEN=0x00ff00,AQUA=0x00ffff,
+    RED=0xff0000,PURPLE=0x800080,YELLOW=0xffff00,WHITE=0xffffff,
+    Reset=0xf0f10180,BOLD=0xf0118f00,CLEAR_BOLD=0xf0118f80,
+    NONE = 0xf0000000
 };
 
 using std::string;
@@ -35,44 +36,23 @@ public:
 };
 
 const endline_t endline{};
-
+constexpr bool isControl(Color c){
+    return static_cast<uint32_t>(c)>0x1000000;
+}
 template<Color c> struct background_t{
 public:
+    static_assert(!isControl(c),"Cannot instantiate background with a control color");
     explicit constexpr background_t()=default;
 };
 
-template<> struct background_t<Color::Reset>{
-private:
-    background_t()=delete;
-    background_t(const background_t&)=delete;
-    background_t(background_t&&)=delete;
-};
 
-template<> struct background_t<Color::NONE>{
-private:
-    background_t()=delete;
-    background_t(const background_t&)=delete;
-    background_t(background_t&&)=delete;
-};
 
 template<Color c> struct foreground_t{
 public:
+    static_assert(!isControl(c),"Cannot instantiate background with a control color");
     explicit constexpr foreground_t()=default;
 };
 
-template<> struct foreground_t<Color::Reset>{
-private:
-    foreground_t()=delete;
-    foreground_t(const foreground_t&)=delete;
-    foreground_t(foreground_t&&)=delete;
-};
-
-template<> struct foreground_t<Color::NONE>{
-private:
-    foreground_t()=delete;
-    foreground_t(const foreground_t&)=delete;
-    foreground_t(foreground_t&&)=delete;
-};
 
 template<Color c> const foreground_t<c> foreground{};
 template<Color c> const background_t<c> background{};
@@ -116,6 +96,7 @@ public:
 
 class Terminal{
 private:
+    std::recursive_mutex lock;
 public:
     Terminal();
     ~Terminal();
@@ -127,7 +108,6 @@ public:
     Terminal& clear();
     Terminal& wait();
     int get();
-    string readPassword(char='*');
 };
 
 #endif

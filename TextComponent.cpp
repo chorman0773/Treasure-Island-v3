@@ -4,9 +4,7 @@
 using std::string;
 using std::to_string;
 
-    TextComponent::TextComponent():__tab(false),text(),c(Color::NONE),endl(false),bg(false){
-        
-    }
+    TextComponent::TextComponent():__tab(false),text(),c(Color::NONE),endl(false),bg(false){}
     TextComponent::TextComponent(const string& text):__tab(false),text(text),c(Color::NONE),endl(false),bg(false){}
     TextComponent::TextComponent(string&& text):__tab(false),text(text),c(Color::NONE),endl(false),bg(false){}
     TextComponent::TextComponent(Color color):__tab(false),text(),c(color),endl(false),bg(false){}

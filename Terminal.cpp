@@ -1,23 +1,17 @@
 #include <Text.hpp>
 
 #include <iostream>
-extern "C"{
-#ifndef _WIN32
 #include <unistd.h>
 #include <termios.h>
-#elif
-#include <conio.h>
-#endif
-};
+
+
+using std::to_string;
 
 #define RESET "\x1b[0m"
 
 #define FG 38
 #define BG 48
 
-#define STRINGIFY(...) #__VA_ARGS__
-#define FCOLOR(r,g,b) STRINGIFY(\x1b[38;2;r;g;b##m)
-#define GCOLOR(r,g,b) STRINGIFY(\x1b[48;2;r;g;b##m)
 
 #ifdef _WIN32
 #define CLEAR "cls"
@@ -30,28 +24,52 @@ extern "C"{
 using std::cout;
 using std::endl;
 
-const string fcolorCodes[] = {
-    FCOLOR(0,0,0),FCOLOR(0,0,128),FCOLOR(0,100,0),FCOLOR(0,139,139),
-    FCOLOR(139,0,0),FCOLOR(75,0,130),FCOLOR(218,165,32),FCOLOR(128,128,128),
-    FCOLOR(64,64,64),FCOLOR(0,0,255),FCOLOR(0,255,0),FCOLOR(0,255,255),
-    FCOLOR(255,0,0),FCOLOR(128,0,128),FCOLOR(255,255,0),FCOLOR(255,255,255),
-    RESET
-};
-
-const string gcolorCodes[] = {
-    GCOLOR(0,0,0),GCOLOR(0,0,128),GCOLOR(0,100,0),GCOLOR(0,139,139),
-    GCOLOR(139,0,0),GCOLOR(75,0,130),GCOLOR(218,165,32),GCOLOR(128,128,128),
-    GCOLOR(64,64,64),GCOLOR(0,0,255),GCOLOR(0,255,0),GCOLOR(0,255,255),
-    GCOLOR(255,0,0),GCOLOR(128,0,128),GCOLOR(255,255,0),GCOLOR(255,255,255),
-    RESET
-};
+using namespace std::string_literals;
 
 
-const string& toFColorCode(Color c){
-    return fcolorCodes[static_cast<unsigned char>(c)];
+
+
+string toFColorCode(Color c){
+    string target = "\x1b[38;2;"s;
+    uint32_t rgb = static_cast<uint32_t>(c);
+    uint8_t r = rgb>>16;
+    uint8_t g = (rgb>>8)&0xff;
+    uint8_t b = rgb&0xff;
+    target += to_string(int(r));
+    target += ";";
+    target += to_string(int(g));
+    target += ";";
+    target += to_string(int(b));
+    target += "m";
+    return std::move(target);
 }
-const string& toGColorCode(Color c){
-    return gcolorCodes[static_cast<unsigned char>(c)];
+string toGColorCode(Color c){
+    string target = "\x1b[48;2;"s;
+    uint32_t rgb = static_cast<uint32_t>(c);
+    uint8_t r = rgb>>16;
+    uint8_t g = rgb>>8;
+    uint8_t b = rgb;
+    target += to_string(int(r));
+    target += ";";
+    target += to_string(int(g));
+    target += ";";
+    target += to_string(int(b));
+    target += "m";
+    return std::move(target);
+}
+
+string toCommandCode(Color c){
+    switch(c){
+        case Color::Reset:
+            return RESET;
+        break;
+        case Color::BOLD:
+            return "\x1b[1m"s;
+        break;
+        case Color::CLEAR_BOLD:
+            return "\x1b[21m"s;
+        break;
+    }
 }
 
 Terminal::Terminal(){
@@ -63,13 +81,15 @@ Terminal::~Terminal(){
 }
 
 Terminal& Terminal::print(const TextComponent& t){
+    std::lock_guard<std::recursive_mutex> sync(lock);
     Color c = t.getColor();
     if(c!=Color::NONE){
+        if(c==Color::Reset)
+            cout << RESET;
         if(t.isBGColor())
             cout << toGColorCode(c);
         else
             cout << toFColorCode(c);
-        cout.flush();//Make sure the color is updated
     }
     else if(t.isEndl())
         cout << endl;
@@ -81,11 +101,9 @@ Terminal& Terminal::print(const TextComponent& t){
 }
 
 int Terminal::get(){
-#ifndef _WIN32
+    std::lock_guard<std::recursive_mutex> sync(lock);
     unsigned char buf = 0;
     struct termios old = {0};
-    if (tcgetattr(0, &old) < 0)
-            perror("tcsetattr()");
     old.c_lflag &= ~ICANON;
     old.c_lflag &= ~ECHO;
     old.c_cc[VMIN] = 1;
@@ -99,22 +117,17 @@ int Terminal::get(){
     if (tcsetattr(0, TCSADRAIN, &old) < 0)
             perror ("tcsetattr ~ICANON");
     return (buf);
-#else
-    return _getch();
-#endif
 }
 Terminal& Terminal::wait(){
+    std::lock_guard<std::recursive_mutex> sync(lock);
     get();
     return *this;
 }
 
 Terminal& Terminal::clear(){
+    std::lock_guard<std::recursive_mutex> sync(lock);
     cout << RESET <<endl;
     system(CLEAR);
     return *this;
 }
 
-string Terminal::readPassword(char echo){
-    string pwd;
-    int i = get();
-}
