@@ -84,8 +84,8 @@ Terminal& Terminal::print(const TextComponent& t){
     std::lock_guard<std::recursive_mutex> sync(lock);
     Color c = t.getColor();
     if(c!=Color::NONE){
-        if(c==Color::Reset)
-            cout << RESET;
+        if(isControl(c))
+            cout << toCommandCode(c);
         if(t.isBGColor())
             cout << toGColorCode(c);
         else
@@ -101,9 +101,11 @@ Terminal& Terminal::print(const TextComponent& t){
 }
 
 int Terminal::get(){
-    std::lock_guard<std::recursive_mutex> sync(lock);
+#ifndef _WIN32
     unsigned char buf = 0;
     struct termios old = {0};
+    if (tcgetattr(0, &old) < 0)
+            perror("tcsetattr()");
     old.c_lflag &= ~ICANON;
     old.c_lflag &= ~ECHO;
     old.c_cc[VMIN] = 1;
@@ -114,9 +116,12 @@ int Terminal::get(){
             perror ("read()");
     old.c_lflag |= ICANON;
     old.c_lflag |= ECHO;
-    if (tcsetattr(0, TCSADRAIN, &old) < 0)
+    if (tcsetattr(0, TCSANOW, &old) < 0)
             perror ("tcsetattr ~ICANON");
     return (buf);
+#else
+    return _getch();
+#endif
 }
 Terminal& Terminal::wait(){
     std::lock_guard<std::recursive_mutex> sync(lock);
