@@ -13,7 +13,7 @@
 #include "Hash.hpp"
 
 #define VERSION_CONSTEXPR constexpr
-#define VERISON_DELETE =delete
+#define VERSION_DELETE =delete
 #define VERSION_DEFAULT =default;
 
 #ifdef _MSC_VER
@@ -34,27 +34,6 @@ using std::ostream;
 
 
 
-
-template<typename group> struct VersionConstants{
-private:
-	VersionConstants()VERISON_DELETE;
-	VersionConstants(const VersionConstants&)VERSION_DELETE;
-	VersionConstants(VersionConstants&&)VERSION_DELETE;
-	VersionConstants& operator=(const VersionConstants&)VERSION_DELETE;
-	VersionConstants& operator=(VersionConstants&&)VERSION_DELETE;
-};
-
-template<typename group,typename=typename std::conditional<false,decltype(group::major),decltype(group::minor)>
-	struct VersionConstants<group,target>{
-	public:
-		VERSION_CONSTEXPR VersionConstants()VERSION_DEFAULT
-		VERSION_CONSTEXPR VersionConstants(const VersionConstants&)VERSION_DEFAULT
-		VERSION_CONSTEXPR VersionConstants(VersionConstants&&)VERSION_DEFAULT
-		VERSION_CONSTEXPR VersionConstants& operator=(const VersionConstants&)VERSION_DEFAULT
-		VERSION_CONSTEXPR VersionConstants& operator=(VersionConstants&&)VERSION_DEFAULT
-		VERSION_CONSTEXPR VersionConstants(group){}
-
-	};
 
 /*
  * Represents a version of the code.
@@ -94,10 +73,6 @@ public:
 	 */
 	VERSION_CONSTEXPR Version(int maj,int min):major(maj-1),minor(min){}
 	
-	template<typename group> VERSION_CONSTEXPR Version(VersionConstants<group>):
-	major(group::major-1),minor(group::minor){
-
-	}
 	
 	/*
 	 * Gets the major version, ranging from 1 to 256
@@ -173,7 +148,7 @@ ostream& operator<<(ostream&,const Version&);
 
 
 
-int32_t hashcode(Version v){
+constexpr int32_t hashcode(Version v){
 	return v.hashCode();
 }
 
