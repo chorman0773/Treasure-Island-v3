@@ -41,9 +41,11 @@ struct Vec2{
     constexpr int32_t hashCode()const{
         return x*31+y;
     }
+    
 
 };
-constexpr const Vec2 ZERO{0,0};
+constexpr const Vec2 ORIGIN{0,0};
+
 
 constexpr int32_t hashcode(const Vec2& v){
     return v.x*31+v.y;
