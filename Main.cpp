@@ -31,8 +31,6 @@ void __help(Terminal& t){
 
 int main(int argc,const char* argv[]){
     Terminal term;
-    /*
-    
     Game g(term);
     bool running(true);
     Menu m("Treasure Island"s,Color::GOLD);
@@ -54,11 +52,6 @@ int main(int argc,const char* argv[]){
                 running = false;
             break;
         }
-    }*/
-    term.print(foreground<Color::GREEN>,background<Color::DARK_RED>)
-    .print("Hello World"s,endline)
-    .print(foreground<Color::GOLD>,background<Color::DARK_PURPLE>,Color::BOLD)
-    .print("Press any key to exit>",endline)
-    .wait();
+    }
     return EXIT_SUCCESS;
 }
