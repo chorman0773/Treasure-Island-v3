@@ -3,6 +3,10 @@
 #include <Tile.hpp>
 #include <Player.hpp>
 #include <JTime.hpp>
+#include <fstream>
+#include <iostream>
+
+using namespace std::string_literals;
 
 class GameImpl{
 private:
@@ -27,7 +31,17 @@ public:
         .wait();
     }
     void runGame(){}
-    void phelp(){}
+    void phelp(){
+        std::ifstream input("help");
+        string str;
+        t.print("------------Help---------------"s,endline);
+        while(!input.eof()){
+            std::getline(input,str);
+            t.print(str,endline);
+        }
+        t.print("Press any key to continue>",endline).wait();
+
+    }
 };
 
 
