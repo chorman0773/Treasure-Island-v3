@@ -3,7 +3,7 @@
 The 5th attempt at writing a good Text based "Wander Arround and Survive" game (Only 2 previous attempts have gotten anywhere
 near complete). More Info will be here when I have it.
 
-(c) Connor Horman, 2017
+(c) Connor Horman, 2018
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
