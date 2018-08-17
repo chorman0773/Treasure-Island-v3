@@ -1,6 +1,6 @@
 #ifndef __Wrappers_hpp_2018_06_19_13_46
 #define __Wrappers_hpp_2018_06_19_13_46
-#include <utiltiy>
+#include <utility>
 #include <type_traits>
 #include <typeinfo>
 #include <typeindex>
@@ -10,7 +10,10 @@ private:
     PolymorphicWrapper(const PolymorphicWrapper&)=delete;
     PolymorphicWrapper& operator=(const PolymorphicWrapper&)=delete;
 public:
+    PolymorphicWrapper():val(nullptr){}
     PolymorphicWrapper(PolymorphicWrapper&& r):val(std::exhcange(r.val,nullptr)){}
+    template<typename U,typename=std::enable_if_t<std::is_base_of_v<T,U>>> 
+        PolymorphicWrapper(PolymorphicWrapper<U>&& r):val(std::exchange(r.val,nullptr)){}
     ~PolymorphicWrapper(){
         if(val!=nullptr)
             delete val;
@@ -42,10 +45,6 @@ public:
         operator U&&()&&{
             return std::move(dynamic_cast<U&>(*val));
     }
-    template<typename U,typename=typename std::enable_if<std:is_base_of<T,U>::value>::type>
-        operator U()const{
-            return dynamic_cast<U&>(*val);
-        }
     operator T&()&{
         return *val;
     }
@@ -89,18 +88,36 @@ public:
     }
     template<typename U,typename=typename std::enable_if<std:is_base_of<T,U>::value>::type>
         PolymorphicWrapper<T>& operator=(const U& u){
-            delete val;
+            if(val!=nullptr)
+                delete val;
             val = new U(u);
             return *this;
         }
     template<typename U,typename=typename std::enable_if<std:is_base_of<T,U>::value>::type>
         PolymorphicWrapper<T>& operator=(U&& u){
-            delete val;
+            if(val!=nullptr)
+                delete val;
             val = new U(u);
             return *this;
     }
+    PolymorphicWrapper& operator=(PolymorphicWrapper&& r){
+        if(val!=nullptr)
+            delete val;
+        val = std::exchange(r.val);
+        return *this;
+    }
+    template<typename U,typename=typename std::enable_if<std:is_base_of<T,U>::value>::type>
+    PolymorphicWrapper& operator=(PolymorphicWrapper<U>&& r){
+        if(val!=nullptr)
+            delete val;
+        val = std::exchange(r.val);
+        return *this;
+    }
     
 };
+
+
+
 
 
 
