@@ -23,6 +23,12 @@ public:
 	UUID();
 	UUID(string);
 	UUID(const char*);
+	UUID(const UUID&)=default;
+	UUID(UUID&&)=default;
+	UUID(const UUID&&)=delete;
+	UUID& operator=(const UUID&)=default;
+	UUID& operator=(UUID&&)=default;
+	UUID& operator=(const UUID&&)=delete;
 	uint64_t getHigh()const;
 	uint64_t getLow()const;
 	int32_t hashCode()const;

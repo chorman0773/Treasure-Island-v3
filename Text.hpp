@@ -17,7 +17,7 @@ using std::shared_ptr;
 
 
 
-enum class Color:uint32_t{
+enum class Color:unsigned int{
     BLACK=0x000000, DARK_BLUE=0x00007f,DARK_GREEN=0x006400,DARK_AQUA=0x008B8B,
     DARK_RED=0x8B0000,DARK_PURPLE=0x4B0082,GOLD=0xDAA520,GRAY=0x808080,
     DARK_GRAY=0x404040,BLUE=0x0000ff,GREEN=0x00ff00,AQUA=0x00ffff,
@@ -87,6 +87,12 @@ public:
     TextComponent(const initializer_list<TextComponent>&);
     template<Color c> TextComponent(foreground_t<c>):c(c),text(),bg(false),__tab(true),endl(false){}
     template<Color c> TextComponent(background_t<c>):c(c),text(),bg(true),__tab(true),endl(false){}
+    TextComponent(const TextComponent&)=default;
+    TextComponent(TextComponent&&)=default;
+    TextComponent(const TextComponent&&)=delete;
+    TextComponent& operator=(const TextComponent&)=default;
+    TextComponent& operator=(TextComponent&&)=default;
+    TextComponent& operator=(const TextComponent&&)=delete;
     Color getColor()const;
     const string& getText()const;
     bool isEndl()const;
@@ -97,9 +103,14 @@ public:
 class Terminal{
 private:
     std::recursive_mutex lock;
+    Terminal(const Terminal&)=delete;
+    Terminal(Terminal&&)=delete;
+    Terminal& operator=(const Terminal&)=delete;
+    Terminal& operator=(Terminal&&)=delete;
 public:
     Terminal();
     ~Terminal();
+    
     Terminal& print(const TextComponent&);
     template<typename... Args> Terminal& print(const TextComponent& first,const TextComponent& second,Args&&... rest){
         print(first);

@@ -30,6 +30,8 @@ private:
 	seed_t seed;
 	double nextNextGaussian;
 	bool haveNextNextGaussian;	
+    Random(const Random&)=delete;
+    Random& operator=(const Random&)=delete;
 protected:
 	virtual uint32_t next(int bits);
     recursive_mutex lock;
@@ -45,6 +47,8 @@ public:
         The Pseudorandom Number Generator is initialized with the seed as though it was passed to setSeed.
     */
 	Random(seed_t);
+    Random(Random&&)=default;
+    Random& operator=(Random&&)=default;
     /*
         Sets the Seed of the Pseudorandom Number Generator.
         This method also has the side effect of clearing the nextNextGaussian.

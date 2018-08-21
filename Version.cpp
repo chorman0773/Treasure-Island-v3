@@ -18,7 +18,6 @@ using std::to_string;
 using std::stoi;
 using std::invalid_argument;
 
-const extern int32_t hashPrime;
 
 
 Version::Version(string ver){
@@ -32,33 +31,6 @@ Version::Version(string ver){
 
 
 
-int Version::getEncoded()const{
-	return (major-1)*256|minor;
-}
-int Version::getMajor()const{
-	return major;
-}
-int Version::getMinor()const{
-	return minor;
-}
-
-
-
-bool Version::operator==(const Version& o)const{
-	return major==o.major&&minor==o.minor;
-}
-bool Version::operator<(const Version& o)const{
-	return major<o.major||(major==o.major&&minor<o.minor);
-}
-bool Version::operator>(const Version& o)const{
-	return major>o.major||(major==o.major&&minor>o.minor);
-}
-bool Version::operator<=(const Version& o)const{
-	return *this==o||*this<o;
-}
-bool Version::operator>=(const Version& o)const{
-	return *this==o||*this>o;
-}
 
 
 ostream& operator <<(ostream& o,const Version& v){
