@@ -20,30 +20,30 @@ public:
     }
     PolymorphicWrapper(const T& t):val(new T(t)){}
     PolymorphicWrapper(T&& t):val(new T(t)){}
+    PolymorphicWrapper(const T&&)=delete;
     template<typename U,
     typename=typename std::enable_if<std::conjunction<std::is_base_of<T,U>,
     std::is_default_constructible<U>::value>::type> 
         PolymorphicWrapper(std::in_place_type_t<U>):val(new U){}
     template<typename U,typename... Args,
-    typename=typename std::enable_if<std::conjunction<std::is_base_f<T,U>,
-    std::is_constructible<U,Args...>::value>::type> 
+        typename=std::enable_if_t<std::is_base_of_v<T,U>>> 
         PolymorphicWrapper(std::in_place_type_t<U>,Args&&... args):
         val(new U(std::forward<Args>(args)...)){}
-    template<typename U,typename=typename std::enable_if<std::conjunction<std::is_base_of<T,U>,
-    std::is_copy_constructible<U>>::value>::type> 
+    template<typename U,typename=std::enable_if_t<std::is_base_of_v<T,U>>> 
         PolymorphicWrapper(const U& u):val(new U(u)){}
-     template<typename U,typename=typename std::enable_if<std::conjunction<std::is_base_of<T,U>,
-    std::is_move_constructible<U>>::value>::type>
+    template<typename U,typename=std::enable_if_t<std::is_base_of_v<T,U>>>
         PolymorphicWrapper(U&& u):val(new U(u)){}
-    template<typename U,typename=typename std::enable_if<std:is_base_of<T,U>::value>::type>
+    template<typename U,typename=std::enable_if_t<std::is_base_of_v<T,U>>>
+        PolymorphicWrapper(const U&&)=delete;
+    template<typename U,typename=std::enable_if_t<std::is_base_of_v<T,U>>>
         operator U&()&{
             return dynamic_cast<U&>(*val);
     }
-    template<typename U,typename=typename std::enable_if<std:is_base_of<T,U>::value>::type>
+    template<typename U,typename=std::enable_if_t<std::is_base_of_v<T,U>>>
         operator const U&()const{
             return dynamic_cast<const U&>(*val);
     }
-    template<typename U,typename=typename std::enable_if<std:is_base_of<T,U>::value>::type>
+    template<typename U,typename=std::enable_if_t<std::is_base_of_v<T,U>>>
         operator U&&()&&{
             return std::move(dynamic_cast<U&>(*val));
     }
@@ -59,19 +59,19 @@ public:
     const std::type_info& type()const{
         return typeid(*val);
     }
-    template<typename U,typename=typename std::enable_if<std:is_base_of<T,U>::value>::tye>
+    template<typename U,std::enable_if_t<std::is_base_of_v<T,U>>>
         bool instanceof()const{
             return dynamic_cast<U*>(val)!=nullptr;
         }
-    template<typename U,typename=typename std::enable_if<std:is_base_of<T,U>::value>::tye>
+    template<typename U,typename=std::enable_if_t<std::is_base_of_v<T,U>>>
         U& checkedcast()&{
             return dynamic_cast<U&>(*val);
         }
-    template<typename U,typename=typename std::enable_if<std:is_base_of<T,U>::value>::tye>
+    template<typename U,typename=std::enable_if_t<std::is_base_of_v<T,U>>>
         const U& checkedcast()const{
             return dynamic_cast<const U&>(*val);
         }
-    template<typename U,typename=typename std::enable_if<std:is_base_of<T,U>::value>::type>
+    template<typename U,typename=std::enable_if_t<std::is_base_of_v<T,U>>>
         U&& checkedcast()&&{
             return std::move(dynamic_cast<U&>(*val));
         }
@@ -88,14 +88,14 @@ public:
     const T& operator*()const{
         return *val;
     }
-    template<typename U,typename=typename std::enable_if<std:is_base_of<T,U>::value>::type>
+    template<typename U,typename=std::enable_if_t<std::is_base_of_v<T,U>>>
         PolymorphicWrapper<T>& operator=(const U& u){
             if(val!=nullptr)
                 delete val;
             val = new U(u);
             return *this;
         }
-    template<typename U,typename=typename std::enable_if<std:is_base_of<T,U>::value>::type>
+    template<typename U,typename=std::enable_if_t<std::is_base_of_v<T,U>>>
         PolymorphicWrapper<T>& operator=(U&& u){
             if(val!=nullptr)
                 delete val;
@@ -108,7 +108,7 @@ public:
         val = std::exchange(r.val);
         return *this;
     }
-    template<typename U,typename=typename std::enable_if<std:is_base_of<T,U>::value>::type>
+    template<typename U,typename=std::enable_if_t<std::is_base_of_v<T,U>>>
     PolymorphicWrapper& operator=(PolymorphicWrapper<U>&& r){
         if(val!=nullptr)
             delete val;
