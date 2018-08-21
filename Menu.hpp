@@ -28,7 +28,7 @@ public:
 	MenuItem(string&&,int);
 	MenuItem(string&&,Color,int);
 	MenuItem(MenuItem&&)=default;
-	MenuItem&& operator=(MenuItem&&)=default;
+	MenuItem& operator=(MenuItem&&)=default;
 	Color getColor()const;
 	const string& getName()const;
 	int getCode()const;
