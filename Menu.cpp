@@ -6,11 +6,12 @@
 
 using namespace std::string_literals;
 
-MenuItem::MenuItem(const string& name):c(Color::NONE),name(name),code(0){}
-MenuItem::MenuItem(const string& name,Color color):c(color),name(name),code(0){}
+
 MenuItem::MenuItem(const string& name,int code):c(Color::NONE),name(name),code(code){}
 MenuItem::MenuItem(const string& name,Color color,int code):c(color),name(name),code(code){}
 
+MenuItem::MenuItem(string&& name,int code):c(Color::NONE),name(name),code(code){}
+MenuItem::MenuItem(string&& name,Color color,int code):c(color),name(name),code(code){}
 
 Color MenuItem::getColor()const{
 	return c;
@@ -54,11 +55,19 @@ void Menu::decrement(){
 Menu::Menu():index(0){}
 Menu::Menu(const string& s):index(0),name(s),c(Color::NONE){}
 Menu::Menu(const string& s,Color c):index(0),name(s),c(c){}
-void Menu::addItem(MenuItem& i){
+Menu::Menu(string&& s):index(0),name(s),c(Color::NONE){}
+Menu::Menu(string&& s,Color c):index(0),name(s),c(c){}
+
+
+
+
+Menu& Menu::addItem(MenuItem& i){
 	std::lock_guard<recursive_mutex> sync(lock);
 	menuItems.push_back(&i);
+	return *this;
 }
 int Menu::select(Terminal& t){
+	std::lock_guard<recursive_mutex> sync(lock);
 	do{
 		int i;
 		drawV(t);
