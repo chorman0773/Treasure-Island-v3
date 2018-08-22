@@ -26,14 +26,9 @@ using std::istream;
 const string sep("-");
 const int sizes[] = {8,4,4,4,12};
 
-const UUID UUID::NIL = "00000000-0000-0000-0000-000000000000";
 
-int32_t UUID::hashCode()const{
-	return hashcode(this->high)*hashPrime+hashcode(this->low);
-}
 
-UUID::UUID(uint64_t high,uint64_t low):high(high),low(low){}
-UUID::UUID():high(0),low(0){}
+
 
 UUID::UUID(string str){
 	string currPart;
@@ -56,12 +51,6 @@ UUID UUID::fromString(string str){
 	return UUID(str);
 }
 
-uint64_t UUID::getHigh()const{
-	return this->high;
-}
-uint64_t UUID::getLow()const{
-	return this->low;
-}
 
 uint64_t randomVersion = 0x4000;
 uint64_t versionMask = 0xf000;
@@ -132,40 +121,3 @@ UUID UUID::randomUUID(){
 	return UUID(longs[0],longs[1]);
 }
 
-bool UUID::operator==(const UUID& u)const{
-	return high==u.high&&low==u.low;
-}
-
-bool UUID::operator!=(const UUID& u)const{
-	return high!=u.high||low!=u.low;
-}
-
-bool UUID::operator< (const UUID& u)const{
-	return high<u.high||high==u.high&&low<u.low;
-}
-bool UUID::operator> (const UUID& u)const{
-	return high>u.high||high==u.high&&low>u.low;
-}
-bool UUID::operator<=(const UUID& u)const{
-	return high<u.high||high==u.high&&low<=u.low;
-}
-bool UUID::operator>=(const UUID& u)const{
-	return high>u.high||high==u.high&&low>=u.low;
-}
-
-UUID::operator string()const{
-	return toString();
-}
-
-namespace std{
-	template<> struct hash<UUID>{
-	public:
-		size_t operator()(const UUID& u){
-			return u.hashCode();
-		}
-	};
-};
-
-int hashcode(const UUID& u){
-	return u.hashCode();
-}

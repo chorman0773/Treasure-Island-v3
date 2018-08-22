@@ -14,38 +14,70 @@ private:
 	uint64_t high;
 	uint64_t low;
 public:
-	static const UUID NIL;
+	
 	static UUID fromString(string);
 	static UUID randomUUID();
 	static UUID uuidFromNamespace(string);
 	static UUID ofNow();
-	UUID(uint64_t,uint64_t);
-	UUID();
+	constexpr static UUID nilUUID(){
+		return UUID{};
+	}
+	constexpr UUID(uint64_t h,uint64_t l):high(h),low(l){}
+	constexpr UUID():high(0),low(0){}
 	UUID(string);
 	UUID(const char*);
-	UUID(const UUID&)=default;
-	UUID(UUID&&)=default;
+	constexpr UUID(const UUID&)=default;
+	constexpr UUID(UUID&&)=default;
 	UUID(const UUID&&)=delete;
-	UUID& operator=(const UUID&)=default;
-	UUID& operator=(UUID&&)=default;
-	UUID& operator=(const UUID&&)=delete;
-	uint64_t getHigh()const;
-	uint64_t getLow()const;
-	int32_t hashCode()const;
+	constexpr UUID& operator=(const UUID&)=default;
+	constexpr UUID& operator=(UUID&&)=default;
+	constexpr UUID& operator=(const UUID&&)=delete;
+	constexpr uint64_t getHigh()const{
+		return high;
+	}
+	constexpr uint64_t getLow()const{
+		return low;
+	}
+	constexpr int32_t hashCode()const{
+		return hashcode(high)*31+hashcode(low);
+	}
 	string toString()const;
 	operator string()const;
-	bool operator==(const UUID&)const;
-	bool operator!=(const UUID&)const;
-	bool operator< (const UUID&)const;
-	bool operator> (const UUID&)const;
-	bool operator<=(const UUID&)const;
-	bool operator>=(const UUID&)const;
+	constexpr bool operator==(const UUID& u)const{
+		return high==u.high&&low==u.low;
+	}
+	constexpr bool operator!=(const UUID& u)const{
+		return !(*this==u);
+	}
+	constexpr bool operator< (const UUID& u)const{
+		return high<u.high||(high==u.high&&low<u.low);
+	}
+	constexpr bool operator> (const UUID& u)const{
+		return !(*this<=u);
+	}
+	constexpr bool operator<=(const UUID& u)const{
+		return *this<u||*this==u;
+	}
+	constexpr bool operator>=(const UUID& u)const{
+		return !(*this<u);
+	}
+	
 };
 
 ostream& operator<<(ostream&,const UUID&);
 istream& operator>>(istream&,UUID&);
 string  operator+(const string&,const UUID&);
 
-int32_t hashcode(const UUID&);
+constexpr int32_t hashcode(const UUID& u){
+	return u.hashCode();
+}
+
+namespace std{
+	template<> struct hash<UUID>{
+		size_t operator()(const UUID& u){
+			return u.hashCode();
+		}
+	};
+}
 
 #endif
